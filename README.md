@@ -1,6 +1,6 @@
 ## Varena Fun Data PHP SDK
 
-### Rqquires
+### Requires
 
 - php version >= 7.0.0
 
