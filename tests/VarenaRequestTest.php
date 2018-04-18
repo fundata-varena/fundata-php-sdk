@@ -11,7 +11,7 @@ class VarenaRequestTest extends TestCase
 
     public function testRequest()
     {
-        $guzzleHttp = new VarenaRequest('81bbd364ac54473','23fefce72003404fb81bb2a9180d41e');
+        $guzzleHttp = new VarenaRequest('','');
         $response = $guzzleHttp->getData('/data-service/dota2/pro/league/ti/rank-player',[]);
 
         $this->assertArrayHasKey('data',$response);
