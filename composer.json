@@ -1,0 +1,27 @@
+{
+    "name": "varena/sdk",
+    "description": "Varena php sdk",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.2",
+        "psr/log": "^1.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Varena\\SDK\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "JV",
+            "email": "gjw15546192557@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev":{
+        "phpunit/phpunit": "^6.1",
+        "friendsofphp/php-cs-fixer": "^2.3"
+    }
+
+}
