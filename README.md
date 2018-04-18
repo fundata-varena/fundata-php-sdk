@@ -32,3 +32,8 @@ $reponse = $client->postData($uri,$params);
 
 var_dump($response);die;
 ````
+
+
+### Doc
+
+[VarenaFunDataApiDoc](http://open.varena.com/)
