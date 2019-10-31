@@ -55,7 +55,7 @@ trait AuthTrait
     private function generateSig(string $timestamp,string $nonce,string $secert,string $uri,array $params):string
     {
         ksort($params);
-        $params_str = http_build_query($params);
+        $params_str = urldecode(http_build_query($params));
         $uri = '/'.trim($uri, '/ ');
         $str = implode('|',[$nonce,$secert,$timestamp,$uri,$params_str]);
         return md5($str);
