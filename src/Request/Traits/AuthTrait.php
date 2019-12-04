@@ -26,6 +26,8 @@ trait AuthTrait
                 'Accept-ApiTime' => $timestamp,
                 'Accept-ApiSign' => $sig,
                 'uuid' => UniqueRequest::getId(),
+                'Accept-Encoding' => 'gzip, deflate',
+                'Accept' => '*/*',
             ],
         ];
     }
