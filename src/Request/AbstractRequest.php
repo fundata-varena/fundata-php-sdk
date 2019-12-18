@@ -133,6 +133,54 @@ abstract class AbstractRequest
     }
 
     /**
+     * @param $method
+     * @param string $uri
+     * @param array $options
+     * @return array
+     * @throws APIException
+     */
+    protected function requestAndResponse($method, $uri = '', array $options = [])
+    {
+        $options = array_filter(
+            array_merge(
+                $this->extraRequestOptions ?? [],
+                $options
+            )
+        );
+        $this->uri = $uri;
+        $this->options = $options;
+
+        $tryTimes = 1;
+        while (true) {
+            try {
+                $startAt = microtime(true);
+                $response = $this->client->request($method, $uri, $options);
+                $endAt = microtime(true);
+                $this->checkCode($response);
+                $contents = $this->parseJSON($response);
+                $this->checkStatus($contents);
+                return $contents ?? [];
+            } catch (ConnectException $e) {
+                throw new APIException(
+                    $e->getMessage(),
+                    $this->getRequestUrl(),
+                    $response ?? '',
+                    $this->getRequestOptions()
+                );
+            } catch (\Throwable $e) {
+                throw new APIException(
+                    $e->getMessage(),
+                    $this->getRequestUrl(),
+                    $response ?? '',
+                    $this->getRequestOptions()
+                );
+            }
+        }
+
+        return [];
+    }
+
+    /**
      * @param string $uri
      * @param array $params
      *
@@ -141,6 +189,19 @@ abstract class AbstractRequest
     public function getData($uri, array $params = [])
     {
         return $this->requestAndParse('GET', $uri, [
+            RequestOptions::QUERY => $params,
+        ]);
+    }
+
+    /**
+     * @param $uri
+     * @param array $params
+     * @return array
+     * @throws APIException
+     */
+    public function getResponse($uri, array $params = [])
+    {
+        return $this->requestAndResponse('GET', $uri, [
             RequestOptions::QUERY => $params,
         ]);
     }
