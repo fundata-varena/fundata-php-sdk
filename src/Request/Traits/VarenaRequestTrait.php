@@ -46,20 +46,7 @@ trait VarenaRequestTrait
      */
     protected function checkStatus($contents)
     {
-        if (isset($contents['retcode'])) {
-            $retcode = intval($contents['retcode']);
-            //临时兼容前台api
-            if ($retcode !== Response::SUCCESS) {
-                throw new APIException(
-                    $contents['message'],
-                    $this->getRequestUrl(),
-                    $contents,
-                    $this->getRequestOptions(),
-                    InfoLevel::ERROR,
-                    $retcode
-                );
-            }
-        }else{
+        if (!isset($contents['retcode'])) {
             throw new APIException(
                 'server error in error',
                 $this->getRequestUrl(),
@@ -68,5 +55,28 @@ trait VarenaRequestTrait
                 InfoLevel::ERROR
             );
         }
+
+        $retcode = intval($contents['retcode']);
+
+        // fundata返回的正常的业务code
+        $businessCode = [
+            Response::SUCCESS,
+            Response::NO_DATA,
+            Response::PARAMETERS_ERROR,
+            Response::INTERNAL_ERROR,
+        ];
+
+        if (!in_array($retcode, $businessCode)) {
+            throw new APIException(
+                $contents['message'],
+                $this->getRequestUrl(),
+                $contents,
+                $this->getRequestOptions(),
+                InfoLevel::ERROR,
+                $retcode
+            );
+        }
+
+        return;
     }
 }

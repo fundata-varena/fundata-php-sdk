@@ -32,6 +32,8 @@ class VarenaRequest extends AbstractRequest
     }
 
     /***
+     * @deprecated
+     * @see \Varena\SDK\Request::getResponse
      * @param string $uri
      * @param array $params
      * @return array
@@ -47,6 +49,7 @@ class VarenaRequest extends AbstractRequest
      * @param $uri
      * @param array $params
      * @return array
+     * @throws \Varena\SDK\Exception\APIException
      */
     public function getResponse($uri, array $params = [])
     {
