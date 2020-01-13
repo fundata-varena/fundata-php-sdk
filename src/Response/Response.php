@@ -6,6 +6,12 @@ class Response
 {
     const SUCCESS = 200;
 
+    const PARAMETERS_ERROR = 10000;
+
+    const NO_DATA = 10001;
+
+    const INTERNAL_ERROR = 10002;
+
     public static function successJsonResponse(array $data, string $message = ''): array
     {
         return self::jsonResponse(self::SUCCESS, $data, $message);
