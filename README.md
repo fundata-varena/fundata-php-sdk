@@ -26,7 +26,7 @@ use Varena\SDK\Request\VarenaRequest;
 $client = new VarenaRequest($key,$sercert);
 
 //Get
-$reponse = $client->getData($uri,$params);
+$reponse = $client->getResponse($uri,$params);
 //Post
 $reponse = $client->postData($uri,$params);
 
