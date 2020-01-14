@@ -44,29 +44,52 @@ trait VarenaRequestTrait
      *
      * @throws APIException
      */
-    protected function checkStatus($contents)
+    protected function checkStatus(&$contents)
     {
-        if (isset($contents['retcode'])) {
-            $retcode = intval($contents['retcode']);
-            //临时兼容前台api
-            if ($retcode !== Response::SUCCESS) {
-                throw new APIException(
-                    $contents['message'],
-                    $this->getRequestUrl(),
-                    $contents,
-                    $this->getRequestOptions(),
-                    InfoLevel::ERROR,
-                    $retcode
-                );
-            }
-        }else{
+        if (!isset($contents['retcode']) && // 来自fundata API
+            !isset($contents['code'])   // 来自网关
+        ) {
             throw new APIException(
-                'server error in error',
+                'server error',
                 $this->getRequestUrl(),
                 $contents,
                 $this->getRequestOptions(),
                 InfoLevel::ERROR
             );
         }
+
+        // 500抛一个异常给调用方
+        $retcode = isset($contents['retcode']) ? intval($contents['retcode'])
+            : (isset($contents['code']) ? intval($contents['code']) : 500);
+
+        // fundata & 网关 返回的正常的业务code
+        $businessCode = [
+            Response::SUCCESS,
+            Response::NO_DATA,
+            Response::PARAMETERS_ERROR,
+            Response::INTERNAL_ERROR,
+            Response::AUTH_FAILED,
+            Response::NO_PERMISSION,
+        ];
+
+        if (!in_array($retcode, $businessCode)) {
+            throw new APIException(
+                isset($contents['message']) ? $contents['message']
+                    : sprintf('internal error: illegal retcode[%s]', $retcode),
+                $this->getRequestUrl(),
+                $contents,
+                $this->getRequestOptions(),
+                InfoLevel::ERROR,
+                $retcode
+            );
+        }
+
+        // 网关code替换为retcode
+        if (isset($contents['code'])) {
+            $contents['retcode'] = $contents['code'];
+            unset($contents['code']);
+        }
+
+        return;
     }
 }

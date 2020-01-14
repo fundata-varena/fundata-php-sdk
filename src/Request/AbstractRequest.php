@@ -77,9 +77,11 @@ abstract class AbstractRequest
      * 检查返回的数据状态码是否符合预期
      * 该状态码指的是返回数据中所包含的业务状态码，与http状态码无关
      *
+     * 因为网关业务code需要转换为retcode，所以传引用
+     *
      * @param mixed $contents
      */
-    abstract protected function checkStatus($contents);
+    abstract protected function checkStatus(&$contents);
 
     /**
      * @param string $method
@@ -161,19 +163,15 @@ abstract class AbstractRequest
                 $this->checkStatus($contents);
                 return $contents ?? [];
             } catch (ConnectException $e) {
-                throw new APIException(
-                    $e->getMessage(),
-                    $this->getRequestUrl(),
-                    $response ?? '',
-                    $this->getRequestOptions()
-                );
+                return [
+                    'retcode' => $e->getCode(),
+                    'message' => $e->getMessage(),
+                ];
             } catch (\Throwable $e) {
-                throw new APIException(
-                    $e->getMessage(),
-                    $this->getRequestUrl(),
-                    $response ?? '',
-                    $this->getRequestOptions()
-                );
+                return [
+                    'retcode' => $e->getCode(),
+                    'message' => $e->getMessage(),
+                ];
             }
         }
 
@@ -185,6 +183,7 @@ abstract class AbstractRequest
      * @param array $params
      *
      * @return array
+     * @throws APIException
      */
     public function getData($uri, array $params = [])
     {
@@ -211,6 +210,7 @@ abstract class AbstractRequest
      * @param array|string $params
      *
      * @return array
+     * @throws APIException
      */
     public function postData($uri, $params = [])
     {
@@ -224,6 +224,7 @@ abstract class AbstractRequest
      * @param array $params
      *
      * @return array
+     * @throws APIException
      */
     public function deleteData($uri, $params = [])
     {
